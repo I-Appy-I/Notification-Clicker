@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Notification Clicker</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: #f4f4f5;
+    }
+
+    h1 {
+      margin-bottom: 0.5rem;
+    }
+
+    button {
+      padding: 0.6rem 1.2rem;
+      border-radius: 0.5rem;
+      border: none;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: transform 0.1s ease;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    #enable-btn {
+      background: #2563eb;
+      color: white;
+      box-shadow: 0 4px 10px rgba(37, 99, 235, 0.4);
+    }
+
+    #send-btn {
+      background: #22c55e;
+      color: white;
+      box-shadow: 0 4px 10px rgba(34, 197, 94, 0.4);
+    }
+
+    button:active {
+      transform: scale(0.97);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+
+    #status {
+      font-size: 0.9rem;
+      color: #4b5563;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔔 Notification Clicker</h1>
+  <p id="status">Checking notification support...</p>
+
+  <div>
+    <button id="enable-btn">Enable Notifications</button>
+    <button id="send-btn" disabled>Send Notification</button>
+  </div>
+
+  <script>
+    const enableBtn = document.getElementById('enable-btn');
+    const sendBtn = document.getElementById('send-btn');
+    const statusText = document.getElementById('status');
+
+    if (!('Notification' in window)) {
+      statusText.textContent = '❌ Notifications are not supported in this browser.';
+      enableBtn.disabled = true;
+      sendBtn.disabled = true;
+    } else {
+      updateUIBasedOnPermission();
+    }
+
+    function updateUIBasedOnPermission() {
+      if (Notification.permission === 'granted') {
+        statusText.textContent = ' Notifications are enabled.';
+        enableBtn.disabled = true;
+        sendBtn.disabled = false;
+      } else if (Notification.permission === 'denied') {
+        statusText.textContent = ' Notifications are blocked in your browser settings.';
+        enableBtn.disabled = true;
+        sendBtn.disabled = true;
+      } else {
+        statusText.textContent = ' Click "Enable Notifications" to allow notifications.';
+        enableBtn.disabled = false;
+        sendBtn.disabled = true;
+      }
+    }
+
+    enableBtn.addEventListener('click', function() {
+      Notification.requestPermission().then(function(permission) {
+        updateUIBasedOnPermission();
+        if (permission === 'granted') {
+          new Notification('Hello !', {
+            body: 'Notifications are now enabled.',
+          });
+        }
+      });
+    });
+
+    sendBtn.addEventListener('click', function() {
+      if (Notification.permission === 'granted') {
+        new Notification('👋 Hey there!', {
+          body: 'Hello',
+        });
+      }
+    });
+  </script>
+</body>
+</html>
